@@ -1,4 +1,6 @@
 defmodule Km.Meme do
+  require Logger
+
   def get_random() do
     Enum.random(get_all)
   end
@@ -12,7 +14,29 @@ defmodule Km.Meme do
   end
 
   def get_all do
-    html = Floki.parse(get_page)
+    case Agent.get(:cache, &Map.get(&1, :memes, :empty)) do
+      memes when is_list(memes) ->
+        Logger.info("got memes from cache");
+        memes
+      _ ->
+        Logger.info("no cached memes yet, parsing page");
+        memes = get_from_page(get_page)
+
+        Agent.update(:cache, &Map.put(&1, :memes, memes))
+
+        memes
+    end
+  end
+
+  defp clear_text(text) do
+    String.strip(text)
+    |> String.strip(?.)
+    |> String.strip
+    |> String.downcase
+  end
+
+  defp get_from_page(page) do
+    html = Floki.parse(page)
     # parsing html with structure of
     # <p>meme 1 title</p><img data-src="meme-1-image.gif"/>
     # <p>meme 2 title</p><img data-src="meme-2-image.gif"/>
@@ -31,13 +55,6 @@ defmodule Km.Meme do
           text: Floki.DeepText.get(paragraph)
         }
     end)
-  end
-
-  defp clear_text(text) do
-    String.strip(text)
-    |> String.strip(?.)
-    |> String.strip
-    |> String.downcase
   end
 
   defp get_page() do

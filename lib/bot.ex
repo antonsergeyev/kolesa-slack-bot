@@ -37,6 +37,7 @@ defmodule Km.Bot do
   end
 
   def run do
+    Agent.start_link(fn -> %{} end, name: :cache)
     start_link(Application.get_env(:km, :slack_api_key))
   end
 end
