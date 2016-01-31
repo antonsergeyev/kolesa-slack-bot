@@ -37,7 +37,6 @@ defmodule Km.Bot do
   end
 
   def run do
-    #start_link("xoxb-19885558611-Inmq7pdtBNovGM01q646I283")
     start_link(Application.get_env(:km, :slack_api_key))
   end
 end
