@@ -16,10 +16,10 @@ defmodule Km.Meme do
   def get_all do
     case Agent.get(:cache, &Map.get(&1, :memes, :empty)) do
       memes when is_list(memes) ->
-        Logger.info("got memes from cache");
+        Logger.debug("got memes from cache");
         memes
       _ ->
-        Logger.info("no cached memes yet, parsing page");
+        Logger.debug("no cached memes yet, parsing page");
         memes = get_from_page(get_page)
 
         Agent.update(:cache, &Map.put(&1, :memes, memes))

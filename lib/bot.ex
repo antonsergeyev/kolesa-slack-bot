@@ -16,11 +16,11 @@ defmodule Km.Bot do
   end
 
   def get_by_text(bot, msg, text) do
-      meme = Km.Meme.get_by_text(text)
+    meme = Km.Meme.get_by_text(text)
 
-      if meme do
-        send_meme(bot, msg["channel"], meme)
-      end
+    if meme do
+      send_meme(bot, msg["channel"], meme)
+    end
   end
 
   def get_by_id(bot, msg, id) do
