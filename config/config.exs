@@ -3,6 +3,7 @@
 use Mix.Config
 
 config :km, meme_source: "http://iborodikhin.net/kolesa/"
+config :km, meme_img_host: "http://iborodikhin.net/"
 config :km, slack_api_key: System.get_env("slack_api_key")
 
 # This configuration is loaded before any dependency and is restricted

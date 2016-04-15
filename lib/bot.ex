@@ -3,7 +3,10 @@ defmodule Km.Bot do
   use Slacker.Matcher
 
   match ~r/как оно в кол[е|ё]сах/ui, :get_random
+  match ~r/how is it going at kolesa/ui, :get_random
   match ~r/нормально делай$/ui, :get_normal
+  match ~r/обнови гифки/ui, :flush_cache
+  match ~r/can i haz new memes?/ui, :flush_cache
   match ~r/(.{5,})/ui, :get_by_text
   match ~r/как оно [#|№]\s?(\d+)/ui, :get_by_id
 
@@ -31,13 +34,14 @@ defmodule Km.Bot do
     end
   end
 
+  def flush_cache(bot, msg) do
+    Agent.update(:cache, &Map.delete(&1, :memes))
+
+    say bot, msg["channel"], "done"
+  end
+
   def send_meme(bot, channel, meme) do
     reply = meme.image <> "\n" <> meme.text
     say bot, channel, reply
-  end
-
-  def run do
-    Agent.start_link(fn -> %{} end, name: :cache)
-    start_link(Application.get_env(:km, :slack_api_key))
   end
 end

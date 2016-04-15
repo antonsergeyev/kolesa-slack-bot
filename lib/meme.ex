@@ -51,19 +51,21 @@ defmodule Km.Meme do
 
         %{
           id: index + 1,
-          image: Application.get_env(:km, :meme_source) <> src,
+          image: String.strip(Application.get_env(:km, :meme_img_host), ?/) <> src,
           text: Floki.DeepText.get(paragraph)
         }
     end)
   end
 
-  defp get_page() do
-    case HTTPoison.get(Application.get_env(:km, :meme_source)) do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        body
-       _ ->
-        # todo: handle errors
-        ""
+  def get_page() do
+      url = Application.get_env(:km, :meme_source)
+      {:ok, response} =  HTTPoison.get(url)
+
+      encoding = Enum.into(response.headers, %{})["Content-Encoding"]
+
+      case encoding do
+        "gzip" -> :zlib.gunzip response.body
+        nil    -> response.body
+      end
     end
-  end
 end
